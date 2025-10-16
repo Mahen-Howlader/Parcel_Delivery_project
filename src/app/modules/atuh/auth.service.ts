@@ -3,10 +3,10 @@ import { envVars } from "../../../config/env";
 import AppError from "../../errorHelpers/appError";
 import { genaretToken } from "../../utils/jwt";
 import { IUser, IUserLogin } from "../user/user.interface";
-import { User } from "./auth.model";
 import bcrypt from "bcrypt";
 import httpStatus from 'http-status-codes';
 import { createUserToken } from "../../utils/userToken";
+import { User } from "../user/user.model";
 
 const registerUser = async (payload: Partial<IUser>) => {
     const { email, password, ...rest } = payload;
@@ -35,7 +35,7 @@ const loginUser = async (payload: Partial<IUserLogin>) => {
     const jwtPayload = {
         email: isUserExist.email,
         role: isUserExist.role,
-        id: isUserExist._id
+        _id: isUserExist._id
     };
     const {accessToken,refreshToken} = createUserToken(jwtPayload);
 
