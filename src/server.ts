@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 import { app } from "./app";
 import { envVars } from "./config/env";
 let server: Server;
-
-
 const startServer = async () => {
     try {
         await mongoose.connect(`${envVars.DB_URL}`);
@@ -18,4 +16,4 @@ const startServer = async () => {
         console.log(error);
     }
 };
- startServer();
+startServer();

@@ -9,11 +9,12 @@ interface EnvConfig {
     JWT_REFRESH_SECRET: string,
     JWT_ACCESS_EXPIRES: string,
     JWT_REFRESH_EXPIRED: string,
+    BCRYPT_SALT_ROUND : string
 };
 
 export const loadEnvVariables = (): EnvConfig => {
 
-    const requireEnvVariables: string[] = ["PORT", "DB_URL", "NODE_ENV", "JWT_ACCESS_SECREAT", "JWT_REFRESH_SECRET", "JWT_ACCESS_EXPIRES", "JWT_REFRESH_EXPIRED"];
+    const requireEnvVariables: string[] = ["PORT", "DB_URL", "NODE_ENV", "JWT_ACCESS_SECREAT", "JWT_REFRESH_SECRET", "JWT_ACCESS_EXPIRES", "JWT_REFRESH_EXPIRED", "BCRYPT_SALT_ROUND"];
     requireEnvVariables.forEach(key => {
         if (!process.env[key]) {
             throw new Error(`Missging require environment variable ${key}`)
@@ -27,6 +28,7 @@ export const loadEnvVariables = (): EnvConfig => {
         JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
         JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES as string,
         JWT_REFRESH_EXPIRED: process.env.JWT_REFRESH_EXPIRED as string,
+        BCRYPT_SALT_ROUND : process.env.BCRYPT_SALT_ROUND as string
     }
 };
 
