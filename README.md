@@ -70,5 +70,15 @@ npm run dev
 
 
 PORT=5000
-MONGO_URI=mongodb+srv://...
-JWT_SECRET=yourSecret
+DB_URL=mongodb+srv://parcel_delivery:clTyxqGvduVuUPDi@cluster0.iagloem.mongodb.net/parcel_delivery?retryWrites=true&w=majority&appName=Cluster0
+
+NODE_ENV=development
+
+JWT_ACCESS_SECRET=access_secret
+JWT_ACCESS_EXPIRES=1d
+
+JWT_REFRESH_SECRET=refresh_secret
+JWT_REFRESH_EXPIRES=30d
+
+BCRYPT_SALT_ROUND=10
+
