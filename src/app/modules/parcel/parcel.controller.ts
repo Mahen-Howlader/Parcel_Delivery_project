@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { parcelService } from "./parcel.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes';
+import AppError from "../../errorHelpers/appError";
 
 
 
@@ -18,9 +19,9 @@ const crateParcels = catchAsync(async (req: Request, res: Response, next: NextFu
     });
 });
 
-const getAllParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const onlyAllSenderParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.userId;
-    const data = await parcelService.getAllParcel(userId);
+    const data = await parcelService.onlyAllSenderParcel(userId);
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
@@ -82,12 +83,74 @@ const percelHistory = catchAsync(async (req: Request, res: Response, next: NextF
     });
 });
 
+
+// all parcel 
+const getAllParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const result = await parcelService.getAllParcel();
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "All Parcel Get successfully",
+        data: result
+    });
+});
+const getSingleParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await parcelService.getSingleParcel(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Single Parcel successfully",
+        data: result
+    });
+});
+const parcelStatusUpdate = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const { status } = req.query;
+    const result = await parcelService.parcelStatusUpdate(id, status as string);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Parcel status updated successfully",
+        data: result
+    });
+});
+const blockParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id; 
+    const result = await parcelService.blockParcel(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: result.message,
+        data: result.parcel
+    });
+});
+
+
+
+// traking parcel 
+const trackingParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) =>{
+    const id = req.params.trackingId;
+      const result = await parcelService.trackingParcel(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Parcel Traking Data Fetch successfully",
+        data: result
+    });
+});
+
 export const parcelController = {
     crateParcels,
-    getAllParcel,
+    onlyAllSenderParcel,
     cancelParcel,
     ParcelStatusHistory,
     getIncomingParcel,
     percelReciver,
-    percelHistory
+    percelHistory,
+    getAllParcel,
+    getSingleParcel,
+    parcelStatusUpdate,
+    blockParcel,
+    trackingParcel
 }

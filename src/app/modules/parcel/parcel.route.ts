@@ -9,7 +9,7 @@ const router = Router();
 
 // Sender Routes
 router.post("/", checkAuth(Role.SENDER), validateRequest(parcelSchema), parcelController.crateParcels)
-router.get("/me", checkAuth(Role.SENDER),  parcelController.getAllParcel);
+router.get("/me", checkAuth(Role.SENDER),  parcelController.onlyAllSenderParcel);
 router.patch("/cancel/:id", checkAuth(Role.SENDER),  parcelController.cancelParcel);
 router.get("/:id/status-log", checkAuth(Role.SENDER),  parcelController.ParcelStatusHistory);
 
@@ -18,6 +18,16 @@ router.get("/incoming", checkAuth(Role.RECEIVER),  parcelController.getIncomingP
 router.patch("/receive/:id", checkAuth(Role.RECEIVER),  parcelController.percelReciver);
 router.get("/history", checkAuth(Role.RECEIVER),  parcelController.percelHistory);
 
+
+// Admin Routes
+router.get("/", checkAuth(Role.ADMIN), parcelController.getAllParcel);
+router.get("/:id", checkAuth(Role.ADMIN), parcelController.getSingleParcel);
+router.patch("/:id", checkAuth(Role.ADMIN), parcelController.parcelStatusUpdate);
+router.patch("/block/:id", checkAuth(Role.ADMIN), parcelController.blockParcel);
+
+
+// tracking Purcel
+router.get("/track/:trackingId", parcelController.trackingParcel);
 
 export const parcelRouter = router;
 

@@ -1,6 +1,7 @@
 import AppError from "../../errorHelpers/appError";
 import { IParcel, ParcelStatusEnum } from "./parcel.interface"
 import { Parcel } from "./parcel.model";
+import httpStatus from 'http-status-codes';
 
 const createParcels = async (payload: Partial<IParcel>, userId: string) => {
     if (!payload.fee && payload.weight) {
@@ -18,7 +19,7 @@ const createParcels = async (payload: Partial<IParcel>, userId: string) => {
     return data;
 };
 
-const getAllParcel = async (id: string) => {
+const onlyAllSenderParcel = async (id: string) => {
     const data = await Parcel.find({ userId: id });
     return data;
 };
@@ -100,10 +101,76 @@ const percelHistory = async (userId: string) => {
     return parcels;
 };
 
+// getAllParcel
 
+const getAllParcel = async () => {
+    const parcels = await Parcel.find();
+    return parcels;
+};
 
+const getSingleParcel = async (id: string) => {
+    if (!id) {
+        throw new AppError(400, "Receiver ID is required")
+    };
+    const parcels = await Parcel.findById(id);
+    return parcels;
+};
+const parcelStatusUpdate = async (id: string, status: string) => {
+    const parcels = await Parcel.findById(id);
+    if (!parcels) {
+        throw new AppError(httpStatus.NOT_FOUND, "Parcel Not Found");
+    };
+    if (parcels.status === status) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Status is already set to this value");
+    };
+    if (!status) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Status Required");
+    }
+    const updatedParcel = await Parcel.findByIdAndUpdate(
+        id,
+        {
+            $set: { status },
+            $push: {
+                statusLog: {
+                    status,
+                    updatedAt: new Date()
+                }
+            }
+        },
+        { new: true, runValidators: true }
+    );
 
+    return updatedParcel;
+};
 
+const blockParcel = async (id: string) => {
+    const parcel = await Parcel.findById(id);
+    if (!parcel) {
+        throw new AppError(httpStatus.NOT_FOUND, "Parcel Is NOT Found")
+    }
+
+    parcel.isBlocked = !parcel.isBlocked;
+    await parcel.save();
+    return {
+        message: parcel.isBlocked
+            ? "Parcel has been blocked successfully"
+            : "Parcel has been unblocked successfully",
+        parcel,
+    }
+};
+const trackingParcel = async (id: string) => {
+    const parcel = await Parcel.findOne({ trackingId: id });
+
+    if (!parcel) {
+        throw new AppError(httpStatus.NOT_FOUND, "Tracking Id Parcel NOT Found");
+    }
+
+    return {
+        trackingId: parcel.trackingId,
+        currentStatus : parcel.status,
+        statusLog: parcel.statusLog
+    };
+};
 export const parcelService = {
     createParcels,
     getAllParcel,
@@ -111,5 +178,10 @@ export const parcelService = {
     ParcelStatusHistory,
     getIncomingParcel,
     deliverParcel,
-    percelHistory
+    percelHistory,
+    onlyAllSenderParcel,
+    getSingleParcel,
+    parcelStatusUpdate,
+    blockParcel,
+    trackingParcel
 }

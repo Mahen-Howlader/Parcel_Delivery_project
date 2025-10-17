@@ -17,6 +17,8 @@ export interface IParcel {
     address: string;
     deliveryDate: Date;
     fee: number;
+    trackingId: string;
     status?: ParcelStatusEnum; // enum type
     statusLog?: { status: ParcelStatusEnum; timestamp: Date }[];
+    isBlocked : boolean
 };

@@ -33,11 +33,29 @@ const ParcelSchema = new Schema<IParcel>(
     },
     statusLog: {
       type: [StatusLogSchema],
-      default: [{ status: ParcelStatusEnum.PENDING }]
+      default: [{ status: ParcelStatusEnum.PENDING }],
+    },
+    trackingId: { type: String, unique: true }, 
+    isBlocked: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }
 );
+
+
+
+ParcelSchema.pre("save", function (next) {
+  if (!this.trackingId) {
+    const today = new Date();
+    const dateStr = today.toISOString().slice(0, 10).replace(/-/g, ""); // e.g. 20251017
+    const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    this.trackingId = `TRK-${dateStr}-${randomStr}`;
+  }
+  next();
+});
 
 
 export const Parcel = model<IParcel>("Parcel", ParcelSchema);
